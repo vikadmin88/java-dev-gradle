@@ -1,1 +1,1 @@
-# java-m1-gradle
+Gradle management, fatJar generate in release folder

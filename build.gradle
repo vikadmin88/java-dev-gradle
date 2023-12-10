@@ -1,0 +1,62 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.example'
+version = '1.0'
+ext{
+    newAppName = 'myname'
+}
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    // https://mvnrepository.com/artifact/com.google.code.gson/gson
+    implementation 'com.google.code.gson:gson:2.10.1'
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "org.example.Main"
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.register("cleanRelease") {
+    doLast {
+        delete('release')
+        println "Deleting folder ./release"
+    }
+}
+
+tasks.register("createReleaseFolder") {
+    dependsOn(cleanRelease)
+    doLast {
+        mkdir('release')
+        println "Creating folder ./release"
+    }
+}
+
+tasks.register('releaseJar', Copy) {
+    dependsOn(createReleaseFolder)
+    from "./build/libs/${rootProject.name}-${version}.jar"
+    into "./release"
+    rename "${rootProject.name}-${version}.jar", "${newAppName}.jar"
+}
+
+
+
+clean.finalizedBy cleanRelease
+jar.finalizedBy releaseJar
