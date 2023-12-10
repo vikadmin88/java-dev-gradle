@@ -1,1 +1,1 @@
-Gradle management, fatJar generate in release folder
+Gradle management, fatJar generate in ./release folder.
